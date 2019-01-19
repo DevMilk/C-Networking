@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/socket.h>
-#include <arpa/inet.h> //Ýnternet adresi oluþturmak için gerekli
+#include <arpa/inet.h> //Ä°nternet adresi oluÅŸturmak iÃ§in gerekli
 typedef struct{
 	int client;
 	char buff[255];
@@ -16,7 +16,7 @@ int say(int socket, char* s){
 	int result = send(socket,s,strlen(s),0);
 	if(result==-1)
 			fprintf(stderr,"%s: %s\n","Client'e konusmakta sorun var",strerror(errno));
-			//Bir problem varsa error() çaðýrma. Sýrf 1 client için serveri durdurmak yanlýþ.
+			//Bir problem varsa error() Ã§aÄŸÄ±rma. SÄ±rf 1 client iÃ§in serveri durdurmak yanlÄ±ÅŸ.
 
 	return result;
 }
@@ -24,6 +24,8 @@ int read_in(int socket, char *buf, int len) {
 	char *s = buf;
 	int slen = len;
 	int c = recv(socket, s, slen, 0);
+	if(c>0)
+		return c;
     while ((c > 0) && (s[c-1] != '\n')) {
       s += c;
 	  slen -= c;
@@ -41,29 +43,37 @@ int read_in(int socket, char *buf, int len) {
 
 void *yaz_t(void* args){
 	while(1){
+		memset(((PARAM*)args)->buff,'\0',sizeof(((PARAM*)args)->buff));
 		fgets(((PARAM*)args)->buff,255,stdin);
 		say(((PARAM*)args)->client,((PARAM*)args)->buff);
 	}
 }
 int main(int argc ,char* argv[]){
+	
+		if(argc > 2) {
+		printf("Cok fazla parametre girdiniz");
+		exit(1);
+	}
+	int arg =atoi(argv[1]);
 	char buff[255];
 	struct sockaddr_in serv;
 	int client_d = socket(AF_INET, SOCK_STREAM, 0);
 	serv.sin_family = AF_INET;
-	serv.sin_port = htons(30000);
+	serv.sin_port = htons(arg);
 	inet_pton(AF_INET, "127.0.0.1", &serv.sin_addr); //This binds the client to localhost
 	connect(client_d, (struct sockaddr *)&serv, sizeof(serv)); //This connects the client to the server.
 	pthread_t yaz;
 	PARAM* parametreler=(PARAM*)malloc(sizeof(PARAM));
  	parametreler->client=client_d;
  	
-	pthread_create(&yaz,NULL,yaz_t,parametreler); //Yazmayý saðlayan fonksiyon
-	
-	//Karþý taraftan gelenler okumaný saðlamak için while döngüsü
-	while(1) {
-   	 read_in(client_d,buff,255);
+	pthread_create(&yaz,NULL,yaz_t,parametreler); //YazmayÄ± saÄŸlayan fonksiyon
+	int n=1;
+	//KarÅŸÄ± taraftan gelenler okumanÄ± saÄŸlamak iÃ§in while dÃ¶ngÃ¼sÃ¼
+	while(read_in((client_d),buff,255)>0) {
+   //	 n=read_in(client_d,buff,255);
    	 puts(buff);
+   	 memset(buff,'\0',sizeof(buff));
     //An extra breaking condition can be added here (to terminate the while loop)
 	}
-
+	puts("Server ile baglanti kesildi.");
 }

@@ -12,7 +12,7 @@ For Executing Server.c:
 ./Server PORT_NAME
 
 For Executing Client.c:
-./Client PORT_NAME IP_ADRESS(Make it 127.0.0.1 if you run client and server on same computer=
+./Client PORT_NAME IP_ADRESS(Make it 127.0.0.1 if you run client and server on same computer)
 
 
 

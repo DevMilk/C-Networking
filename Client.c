@@ -50,7 +50,7 @@ void *yaz_t(void* args){
 }
 int main(int argc ,char* argv[]){
 	
-		if(argc > 2) {
+		if(argc > 3) {
 		printf("Cok fazla parametre girdiniz");
 		exit(1);
 	}
@@ -60,7 +60,7 @@ int main(int argc ,char* argv[]){
 	int client_d = socket(AF_INET, SOCK_STREAM, 0);
 	serv.sin_family = AF_INET;
 	serv.sin_port = htons(arg);
-	inet_pton(AF_INET, "127.0.0.1", &serv.sin_addr); //This binds the client to localhost
+	inet_pton(AF_INET, argv[2], &serv.sin_addr); //This binds the client to localhost
 	connect(client_d, (struct sockaddr *)&serv, sizeof(serv)); //This connects the client to the server.
 	pthread_t yaz;
 	PARAM* parametreler=(PARAM*)malloc(sizeof(PARAM));

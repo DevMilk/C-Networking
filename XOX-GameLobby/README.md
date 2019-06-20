@@ -1,7 +1,5 @@
 In XOX-GameLobby, each 2 client matchs in lobbies. When one client makes a move, it sends a data that represents its move data
-
 and only its opponent client takes it and client updates each client's game board according to move data. If a player disconnects,
-
 Lobby will be empty by server so opponent disconnected from lobby too.
 
 How to Run?
